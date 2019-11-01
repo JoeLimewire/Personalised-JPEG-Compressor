@@ -1,0 +1,56 @@
+body{
+  text-align: center;
+  background-color: rgb(51,51,51);
+  color:white;
+  font-family: roboto,ariel;
+
+  padding:0px;
+  display: inline;
+}
+
+.main{
+  backgroundColor:blue;
+  padding:20px;
+  display:absolute'
+}
+
+.image{
+
+  height: 300px;
+  width: 33%;
+  float:left;
+}
+
+#table{
+  float:left;
+  position:absolute;
+  left:50%;
+  transform: translate(-50%,0%);
+
+}
+
+#table tbody tr td{
+  padding:10px;
+}
+
+#preview{
+  height: 300px;
+  width: 33%;
+  right:10px;
+  float:right;
+}
+
+.btnQuantise{
+  position:absolute;
+  border:none;
+  border-radius: 30;
+  background-color: rgb(24, 224, 24);
+  padding: 20px;
+  left:50%;
+  bottom:10%;
+  transform: translate(-50%,0%);
+}
+
+.btnQuantise:hover{
+  background-color: rgb(24, 170, 24);
+}
