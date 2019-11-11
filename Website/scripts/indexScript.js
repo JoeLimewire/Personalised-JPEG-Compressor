@@ -1,10 +1,22 @@
 window.onload =function(){
     var i = document.getElementsByClassName("image");
 
+    initSocket();
+
     createTable();
     canvas()
 
 
+}
+
+function initSocket(){
+  var sock = new WebSocket("ws://localhost:5001");
+  sock.onopen = function(event){
+    alert('Socket is connected');
+    setTimeout(function(){
+      sock.send("blabbermoon");
+    },1000);
+  }
 }
 
 function createTable(){
@@ -22,11 +34,17 @@ function createTable(){
 }
 
 function canvas(){
+
   var canvas = document.getElementById("preview");
   var ctx = canvas.getContext("2d");
-  var img = new Image();
-  img.src = "hotBalloon.jpg";
-  ctx.drawImage(img,0,0,canvas.width,canvas.height);
+  console.log(canvas);
+  ctx.crossOrigin = "Anonymous";
 
+  var img = new Image();
+  img.src = "pencils.jpg";
+  canvas.width = img.width;
+  canvas.height = img.height;
+  ctx.drawImage(img,0,0,canvas.width,canvas.height);
+  data = ctx.getImageData(0,0,canvas.width,canvas.height);
 
 }

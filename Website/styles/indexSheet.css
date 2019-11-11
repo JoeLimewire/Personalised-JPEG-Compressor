@@ -15,9 +15,8 @@ body{
 }
 
 .image{
-
-  height: 300px;
   width: 33%;
+  height: auto;
   float:left;
 }
 
@@ -34,8 +33,8 @@ body{
 }
 
 #preview{
-  height: 300px;
   width: 33%;
+  height: auto;
   right:10px;
   float:right;
 }
