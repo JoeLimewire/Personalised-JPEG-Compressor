@@ -1,15 +1,14 @@
 {
-  "name": "wsserver",
+  "name": "scripts",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "indexScript.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "joseph",
+  "author": "",
   "license": "ISC",
   "dependencies": {
-    "express-ws": "^4.0.0",
     "ws": "^7.2.0"
   }
 }

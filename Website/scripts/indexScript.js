@@ -11,12 +11,24 @@ window.onload =function(){
 
 function initSocket(){
   var sock = new WebSocket("ws://localhost:5001");
+  var sock = new WebSocket("ws://scripts/socket.js");
+  var sock = new WebSocket('ws://echo.websocket.org');
   sock.onopen = function(event){
     alert('Socket is connected');
     setTimeout(function(){
       sock.send("blabbermoon");
     },1000);
   }
+  sock.onopen = function(event) {
+    alert('something');
+  };
+
+  // Handle any errors that occur.
+  sock.onerror = function(error) {
+    console.log('WebSocket Error: ' + error);
+  };
+
+
 }
 
 function createTable(){
