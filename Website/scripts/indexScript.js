@@ -3,7 +3,7 @@ window.onload =function(){
 
     initSocket();
 
-    createTable();
+    //createTable();
     canvas()
 
 
@@ -20,7 +20,6 @@ function initSocket(){
     },1000);
   }
   sock.onopen = function(event) {
-    alert('something');
   };
 
   // Handle any errors that occur.
@@ -49,14 +48,54 @@ function canvas(){
 
   var canvas = document.getElementById("preview");
   var ctx = canvas.getContext("2d");
+
+  drawGrid(ctx);
+
   console.log(canvas);
   ctx.crossOrigin = "Anonymous";
-
+  //get image
   var img = new Image();
   img.src = "pencils.jpg";
   canvas.width = img.width;
   canvas.height = img.height;
-  ctx.drawImage(img,0,0,canvas.width,canvas.height);
-  data = ctx.getImageData(0,0,canvas.width,canvas.height);
 
+
+
+  //put image on canvas
+  ctx.drawImage(img,0,0,canvas.width,canvas.height);
+  imgdata = ctx.getImageData(0,0,canvas.width,canvas.height);
+  console.log(imgdata);
+
+  for(var i = 0; i < imgdata.data.length; i= i +3){
+    imgdata.data[i] = imgdata.data[i] -200;
+  }
+ //PUT IMAGE DATA ON CANVAS
+  ctx.putImageData(imgdata,0,0);
+
+  drawGrid(ctx);
+
+  ctx.moveTo(20, 20);
+  ctx.lineTo(40,40);
+
+
+}
+
+function drawGrid(ctx){
+  var canvas = document.getElementById("preview");
+  var width = canvas.width;
+    var height = canvas.height;
+    var cw = width  + 1;
+    var ch = height + 1;
+
+    for (var x = 0; x <= width; x += 8) {
+            ctx.moveTo(0.5 + x, 0);
+            ctx.lineTo(0.5 + x, height );
+        }
+
+        for (var x = 0; x <= height; x += 8) {
+            ctx.moveTo(0, 0.5 + x );
+            ctx.lineTo(width, 0.5 + x);
+        }
+
+      ctx.stroke();
 }
