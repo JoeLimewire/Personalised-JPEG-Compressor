@@ -66,8 +66,8 @@ function canvas(){
   imgdata = ctx.getImageData(0,0,canvas.width,canvas.height);
   console.log(imgdata);
 
-  for(var i = 0; i < imgdata.data.length; i= i +3){
-    imgdata.data[i] = imgdata.data[i] -200;
+  for(var i = 0; i < imgdata.data.length; i= i +2){
+    //imgdata.data[i] = imgdata.data[i] -200;
   }
  //PUT IMAGE DATA ON CANVAS
   ctx.putImageData(imgdata,0,0);
@@ -84,18 +84,24 @@ function drawGrid(ctx){
   var canvas = document.getElementById("preview");
   var width = canvas.width;
     var height = canvas.height;
-    var cw = width  + 1;
-    var ch = height + 1;
 
     for (var x = 0; x <= width; x += 8) {
-            ctx.moveTo(0.5 + x, 0);
-            ctx.lineTo(0.5 + x, height );
-        }
+            ctx.moveTo( x, 0);
+            ctx.lineTo( x, height);
+            ctx.strokeStyle = "#FF0000";
+            ctx.fillRect(x,y,1,1);
+            ctx.strokeStyle = "#000000";
 
-        for (var x = 0; x <= height; x += 8) {
-            ctx.moveTo(0, 0.5 + x );
-            ctx.lineTo(width, 0.5 + x);
+
+        for (var y = 0; y <= height; y += 8) {
+            ctx.moveTo(0, y );
+            ctx.lineTo(width,  y);
+
+            ctx.strokeStyle = "#FF0000";
+            ctx.fillRect(x,0,1,1);
+            ctx.strokeStyle = "#000000";
         }
+      }
 
       ctx.stroke();
 }
