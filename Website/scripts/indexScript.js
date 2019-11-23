@@ -1,10 +1,18 @@
-window.onload =function(){
+//https://arxiv.org/ftp/arxiv/papers/1405/1405.6147.pdf
+
+var w,h;
+
+window.onload = function(){
     var i = document.getElementsByClassName("image");
 
     initSocket();
     //createTable();
+
     var data = getImgData();
-    rgbToYCbCr(data);
+    //RGB to YCbCr Conversion
+    data = rgbToYCbCr(data);
+    //Split Data into 8x8 Blocks
+    splitData(data);
 
 }
 
@@ -54,7 +62,9 @@ function getImgData(){
   ctx.crossOrigin = "Anonymous";
   //get image
   var img = new Image();
-  img.src = "pencils.jpg";
+  img.src = "tiger.jpg";
+  w = img.width;
+  h = img.height;
   canvas.width = img.width;
   canvas.height = img.height;
 
@@ -63,6 +73,7 @@ function getImgData(){
   imgdata = ctx.getImageData(0,0,canvas.width,canvas.height);
   //console.log(imgdata);
 
+  console.log(img.height);
 
   for(var i = 0; i < imgdata.data.length; i= i +2){
     //imgdata.data[i] = imgdata.data[i] -200;
@@ -76,6 +87,7 @@ function getImgData(){
 
   ctx.moveTo(20, 20);
   ctx.lineTo(40,40);
+
 
   return imgdata;
 
@@ -99,25 +111,31 @@ function rgbToYCbCr(data){
 
   for(var i = 0; i < imgdata.data.length; i = i + 4){
     //RGB values are the same
-    var r = data[i];
-    var g = data[i+1];
-    var b = data[i+2];
+    var r = imgdata.data[i];
+    var g = imgdata.data[i+1];
+    var b = imgdata.data[i+2];
 
     var Y = 16 + (65.738*r)/256 + (129.057*g)/256 + (25.064*b)/256;
     var Cb = 128 - (37.945*r)/256 + (74.494*g)/256 + (112.439*b)/256;
     var Cr = 128 + (112.439*r)/256 + (94.154*g)/256 + (18.285*b)/256;
 
-    //change float to int
-    arr[i,0] = parseInt(Y);
-    arr[i,1] = Cb;
-    arr[i,2] = Cr;
-
-    data[i] = Math.floor(Y);
-    data[i+1] = parseInt(Cb);
-    data[i+2] = parseInt(Cr);
+    //shift from range(0-255) to (-128-127)
+    arr[i] = Y - 128;
+    arr[i+1] = Cb - 128;
+    arr[i+2] = Cr - 128;
 
   }
-  console.log(arr[0,0]);
+
+  return arr;
+}
+
+function splitData(data){
+  //how many blocks horizontally
+  bw = w/8;
+  //how many blocks horizontally
+  bh = h/8;
+  console.log(bw);
+  console.log(bh);
 }
 
 function drawGrid(ctx){
