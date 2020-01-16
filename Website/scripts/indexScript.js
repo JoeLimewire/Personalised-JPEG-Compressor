@@ -1,6 +1,8 @@
 //https://arxiv.org/ftp/arxiv/papers/1405/1405.6147.pdf
 
 var w,h;
+var sData;
+
 //MAIN--------------------------------------------------------------------------------
 window.onload = function(){
     var i = document.getElementsByClassName("image");
@@ -16,8 +18,11 @@ window.onload = function(){
 
     //DATA NO LONGER CONTAINS ALPHA VALUE
     console.log(data);
+
     //Split Data into 8x8 Blocks
-    var sData = splitData(data);
+    //sData is a 4 dimentional Array
+    //sData'[width][height]'<- Blocks '[pixel][RGBA]' <- Pixels and values
+    sData = splitData(data);
 
 
 }
@@ -53,9 +58,11 @@ function createTable(){
       var ran = Math.floor(Math.random() * 128) + 1;
       cell.innerHTML = ran;
       cell.style.backgroundColor = "rgb("+ran*2+","+ran+","+ran*2+")";
+
     }
   }
 }
+
 //--------------------------------------------------------------------------------
 function getImgData(){
 
@@ -191,23 +198,48 @@ function drawGrid(ctx){
   var width = canvas.width;
     var height = canvas.height;
 
-    for (var x = 0; x <= width; x += 8) {
-            ctx.moveTo( x, 0);
-            ctx.lineTo( x, height);
-            ctx.strokeStyle = "#FF0000";
-            ctx.fillRect(x,y,1,1);
-            ctx.strokeStyle = "#000000";
+      function highlightCell(i,j){
+        i = Math.round(i);
+        j = Math.round(j);
+        for(var x = 0;  x <= width; x += 8){
+          for (var y = 0; y <= height; y += 8) {
+            if(i == x && j == y){
+                ctx.fillStyle = 'rgba(0, 255, 0, 0.33)';
+                ctx.fillRect(x,y,8,8);
+                console.log("x: " + x/8+ " y : " + y/8);
+                createTable(x/8,y/8);
+            }
+            //console.log("DEBUG: " + "X: " + x + " Y: " + y + " I: " + i + " J : " + j);
+          }
+        }
 
+      }
 
-        for (var y = 0; y <= height; y += 8) {
-            ctx.moveTo(0, y );
-            ctx.lineTo(width,  y);
+      function getMousePos(canvas, evt) {
+        var rect = canvas.getBoundingClientRect(), // abs. size of element
+        scaleX = canvas.width / rect.width,    // relationship bitmap vs. element for X
+        scaleY = canvas.height / rect.height;  // relationship bitmap vs. element for Y
 
-            ctx.strokeStyle = "#FF0000";
-            ctx.fillRect(x,0,1,1);
-            ctx.strokeStyle = "#000000";
+        return {
+          x: (evt.clientX - rect.left) * scaleX,   // scale mouse coordinates after they have
+          y: (evt.clientY - rect.top) * scaleY     // been adjusted to be relative to element
         }
       }
+
+      canvas.addEventListener('mousemove', function(evt) {
+
+        var pos = getMousePos(canvas, evt);
+
+        //ctx.fillStyle = 'rgba(255, 0, 0, 0.10)';
+        //ctx.fillRect(pos.x,pos.y,10,10);
+        highlightCell(pos.x,pos.y);
+        //console.log(message);
+      }, false);
+      canvas.addEventListener('click',function(evt){
+        var mousePos = getMousePos(canvas, evt);
+        var message = 'Mouse position: ' + Math.round(mousePos.x /8)+ ',' + Math.round(mousePos.y/8);
+        alert(message)
+      });
 
       ctx.stroke();
 }
