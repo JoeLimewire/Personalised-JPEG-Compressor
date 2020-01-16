@@ -143,9 +143,11 @@ function splitData(data){
   bw = w/8;
   //how many blocks horizontally
   bh = h/8;
+  var offset = 0;
 
   console.log("DEBUG: WIDTH: " + w + " HEIGHT: " + h);
   console.log("DEBUG: BLOCK-WIDTH: " + bw + " BLOCK-HEIGHT: " + bh);
+
 
   //Array of blocks on WIDTH
   var splitData = new Array(bw);
@@ -155,28 +157,32 @@ function splitData(data){
     for(var j = 0; j < bh; j++){
       //Array of Pixels in each block
       splitData[i][j] = new Array(64);
+      offset = offset+j;
       for(var k = 0; k < 64; k++){
         //RGB data for each pixel
-        splitData[i][j][k] = new Array(3);
+        splitData[i][j][k] = new Array(4);
+        /*
+        splitData[i][j][k][0] = i+j+k+offset;
+        splitData[i][j][k][1] = i+j+k+1+offset;
+        splitData[i][j][k][2] = i+j+k+2+offset;
+        splitData[i][j][k][3] = i+j+k+3+offset;
+
+        */
+        splitData[i][j][k][0] = data[i+j+k+offset];
+        splitData[i][j][k][1] = data[i+j+k+1+offset];
+        splitData[i][j][k][2] = data[i+j+k+2+offset];
+        splitData[i][j][k][3] = data[i+j+k+3+offset];
+
+        offset = offset + 3;
       }
+      offset = offset + 62 - j;
     }
+    offset = offset + 119;
   }
 
   console.log(splitData);
-  splitData[0][1][0][0] = 2;
-  console.log(splitData[0][1][0][0]);
 
-    for(var width = 0; width <= bw; width++){
-      for(var height = 0; height <= bh; height++){
-        for(var pixel = 0; pixel <= 64; pixel++){
-          for(var rgb = 0; rgb <= 2; rgb ++){
-            splitData[width][height][pixel][rgb] = width+height+pixel+rgb;
-          }
-        }
-      }
-    }
-
-  console.log(splitData);
+  return splitData;
 
 }
 //--------------------------------------------------------------------------------
