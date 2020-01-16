@@ -1,24 +1,30 @@
 //https://arxiv.org/ftp/arxiv/papers/1405/1405.6147.pdf
 
 var w,h;
-
+//MAIN--------------------------------------------------------------------------------
 window.onload = function(){
     var i = document.getElementsByClassName("image");
 
     initSocket();
-    //createTable();
+    createTable();
 
+    //'data' contains all the pixel information of the image
     var data = getImgData();
+    console.log(data);
     //RGB to YCbCr Conversion
     data = rgbToYCbCr(data);
+
+    //DATA NO LONGER CONTAINS ALPHA VALUE
+    console.log(data);
     //Split Data into 8x8 Blocks
-    splitData(data);
+    var sData = splitData(data);
+
 
 }
-
+//--------------------------------------------------------------------------------
 function initSocket(){
-  var sock = new WebSocket("ws://localhost:5001");
-  var sock = new WebSocket("ws://scripts/socket.js");
+  //var sock = new WebSocket("ws://localhost:5001");
+  //var sock = new WebSocket("ws://scripts/socket.js");
   var sock = new WebSocket('ws://echo.websocket.org');
   sock.onopen = function(event){
     alert('Socket is connected');
@@ -36,7 +42,7 @@ function initSocket(){
 
 
 }
-
+//--------------------------------------------------------------------------------
 function createTable(){
   var table = document.getElementById("table");
   for(var i=0;i<8;i++){
@@ -50,16 +56,17 @@ function createTable(){
     }
   }
 }
-
+//--------------------------------------------------------------------------------
 function getImgData(){
 
   var canvas = document.getElementById("preview");
   var ctx = canvas.getContext("2d");
+  ctx.crossOrigin = "Anonymous";
 
   drawGrid(ctx);
 
   console.log(canvas);
-  ctx.crossOrigin = "Anonymous";
+
   //get image
   var img = new Image();
   img.src = "tiger.jpg";
@@ -73,7 +80,7 @@ function getImgData(){
   imgdata = ctx.getImageData(0,0,canvas.width,canvas.height);
   //console.log(imgdata);
 
-  console.log(img.height);
+  //console.log(img.height);
 
   for(var i = 0; i < imgdata.data.length; i= i +2){
     //imgdata.data[i] = imgdata.data[i] -200;
@@ -83,7 +90,7 @@ function getImgData(){
 
 
   //Function to draw a 8x8 grid over the canvas
-  //drawGrid(ctx);
+  drawGrid(ctx);
 
   ctx.moveTo(20, 20);
   ctx.lineTo(40,40);
@@ -92,7 +99,7 @@ function getImgData(){
   return imgdata;
 
 }
-
+//--------------------------------------------------------------------------------
 function rgbToYCbCr(data){
 
   /*
@@ -105,11 +112,12 @@ function rgbToYCbCr(data){
   etc...
 
   https://sistenix.com/rgb2ycbcr.html
+
   */
 
   var arr = new Array();
 
-  for(var i = 0; i < imgdata.data.length; i = i + 4){
+  for(var i = 0; i < imgdata.data.length; i = i + 3){
     //RGB values are the same
     var r = imgdata.data[i];
     var g = imgdata.data[i+1];
@@ -128,16 +136,50 @@ function rgbToYCbCr(data){
 
   return arr;
 }
-
+//--------------------------------------------------------------------------------
 function splitData(data){
+
   //how many blocks horizontally
   bw = w/8;
   //how many blocks horizontally
   bh = h/8;
-  console.log(bw);
-  console.log(bh);
-}
 
+  console.log("DEBUG: WIDTH: " + w + " HEIGHT: " + h);
+  console.log("DEBUG: BLOCK-WIDTH: " + bw + " BLOCK-HEIGHT: " + bh);
+
+  //Array of blocks on WIDTH
+  var splitData = new Array(bw);
+  for(var i = 0; i < bw; i++){
+    //Array of blocks on HEIGHT
+    splitData[i] = new Array(bh);
+    for(var j = 0; j < bh; j++){
+      //Array of Pixels in each block
+      splitData[i][j] = new Array(64);
+      for(var k = 0; k < 64; k++){
+        //RGB data for each pixel
+        splitData[i][j][k] = new Array(3);
+      }
+    }
+  }
+
+  console.log(splitData);
+  splitData[0][1][0][0] = 2;
+  console.log(splitData[0][1][0][0]);
+
+    for(var width = 0; width <= bw; width++){
+      for(var height = 0; height <= bh; height++){
+        for(var pixel = 0; pixel <= 64; pixel++){
+          for(var rgb = 0; rgb <= 2; rgb ++){
+            splitData[width][height][pixel][rgb] = width+height+pixel+rgb;
+          }
+        }
+      }
+    }
+
+  console.log(splitData);
+
+}
+//--------------------------------------------------------------------------------
 function drawGrid(ctx){
   var canvas = document.getElementById("preview");
   var width = canvas.width;

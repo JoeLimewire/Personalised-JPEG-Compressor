@@ -3,27 +3,35 @@ body{
   background-color: rgb(51,51,51);
   color:white;
   font-family: roboto,ariel;
-
   padding:0px;
   display: inline;
 }
 
+h2{
+  padding: 10px;
+  position: absolute;
+}
+
 .main{
-  backgroundColor:blue;
+
   padding:20px;
-  display:absolute'
+  display:absolute;
+  top:25%;
 }
 
 .image{
+  padding: 4%;
   width: 33%;
   height: auto;
   float:left;
+  top:30%;
 }
 
 #table{
   float:left;
   position:absolute;
   left:50%;
+  top:25%;
   transform: translate(-50%,0%);
 
 }
@@ -33,12 +41,22 @@ body{
 }
 
 #preview{
+  padding: 4%;
   width: 33%;
   height: auto;
   right:10px;
   float:right;
 }
 
+.right{
+  float: right;
+  right:20%;
+
+}
+.left{
+  float: left;
+  left:20%
+}
 .btnQuantise{
   position:absolute;
   border:none;
