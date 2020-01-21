@@ -5,7 +5,7 @@ var server = app.listen(5001,function(){
 });
 
 //static files
-app.use(express.static('../../Website'));
+app.use(express.static('../Website'));
 
 
 //var server = require('ws').Server;
