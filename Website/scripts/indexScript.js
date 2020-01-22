@@ -1,7 +1,7 @@
 //https://arxiv.org/ftp/arxiv/papers/1405/1405.6147.pdf
 //https://www.math.cuhk.edu.hk/~lmlui/dct.pdf
 
-//import {dct} from './clientNode.js';
+//import { dct } from './clientNode.js';
 
 const t = [
     [.3536, .3536, .3536, .3536, .3536, .3536, .3536, .3536],
