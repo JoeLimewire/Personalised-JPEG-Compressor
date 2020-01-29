@@ -17,35 +17,79 @@ const t = [
 var w, h;
 var sData;
 var img = new Image();
+var imgdata;
 
-//MAIN--------------------------------------------------------------------------------
-window.onload = function() {
-        var i = document.getElementsByClassName("image");
+document.getElementById("myRange").addEventListener("change", function() {
+    var img = document.getElementById("loading");
 
-        initSocket();
+    img.style.display = "block";
+    // show image
+    console.log("Loading...")
+    runCom(this.value);
+    img.style.display = "none";
+    // hide image
+}, false);
 
+function runCom(img) {
+    document.getElementById("qPercent").innerHTML = img + "%";
 
-        //'data' contains all the pixel information of the image
-        var data = getImgData();
-        console.log(data);
-        //RGB to YCbCr Conversion
-        data = rgbToYCbCr(data);
+    //MAIN--------------------------------------------------------------------------------
+    //window.onload = function() {
+    var i = document.getElementsByClassName("image");
 
-        //DATA NO LONGER CONTAINS ALPHA VALUE
-        console.log(data);
+    var quality = document.getElementById("myRange").value;
 
-        //Split Data into 8x8 Blocks
-        //sData is a 4 dimentional Array
-        //sData'[width][height]'<- Blocks '[pixel][RGBA]' <- Pixels and values
-        sData = splitData(data);
-
-        getDCTCoefficients();
-
+    initSocket();
 
 
-        createTable();
-    }
-    //--------------------------------------------------------------------------------
+    //'data' contains all the pixel information of the image
+    imgdata = getImgData();
+    console.log(imgdata);
+    //RGB to YCbCr Conversion
+    imgdata = rgbToYCbCr(imgdata);
+
+    //Alpha value has been set to 0
+    console.log("YCbCr: ");
+    console.log(imgdata);
+
+    //Split Data into 8x8 Blocks
+    //sData is a 4 dimentional Array
+    //sData'[width][height]'<- Blocks '[pixel][RGBA]' <- Pixels and values
+    sData = splitData(imgdata);
+
+    var c = getDCTCoefficients();
+    console.log("Coefficients: ");
+    console.log(c);
+
+    var qc = quantise(c, quality);
+
+    console.log("Quantise: " + quality);
+    console.log(qc);
+
+    var r = reconstruct(quality, qc);
+
+    console.log("Reconstruct: " + quality);
+    console.log(r);
+
+    var N = decompress(r);
+
+    console.log("Decompressed Image: ");
+    console.log(N);
+
+    var Cvalues = YCbCrtoRGB(N);
+
+    console.log("RGB Decompressed Image: ");
+    console.log(Cvalues);
+
+    var newimgdata = formatData(Cvalues);
+    console.log("Formatted Data: ");
+    console.log(newimgdata);
+
+    printImg(newimgdata);
+
+    createTable();
+}
+//--------------------------------------------------------------------------------
 function initSocket() {
     //var sock = new WebSocket("ws://localhost:5001");
     //var sock = new WebSocket("ws://scripts/socket.js");
@@ -169,10 +213,9 @@ function rgbToYCbCr(data) {
         var b = imgdata.data[i + 2];
         var a = imgdata.data[i + 3];
 
-
-        var Y = 16 + (65.738 * r) / 256 + (129.057 * g) / 256 + (25.064 * b) / 256;
-        var Cb = 128 - (37.945 * r) / 256 + (74.494 * g) / 256 + (112.439 * b) / 256;
-        var Cr = 128 + (112.439 * r) / 256 + (94.154 * g) / 256 + (18.285 * b) / 256;
+        Y = 0.257 * r + 0.504 * g + 0.098 * b + 16
+        Cb = -0.148 * r - 0.291 * g + 0.439 * b + 128
+        Cr = 0.439 * r - 0.368 * g - 0.071 * b + 128
 
 
         //shift from range(0-255) to (-128-127)
@@ -299,7 +342,7 @@ function drawGrid(ctx) {
         var x = Math.floor(i / 8);
         var y = Math.floor(j / 8);
 
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+        printImg(imgdata);
         ctx.fillStyle = 'rgba(0, 255, 0, 0.40)';
         ctx.fillRect(x * 8, y * 8, 8, 8);
 
@@ -332,7 +375,7 @@ function drawGrid(ctx) {
 
     ctx.stroke();
 }
-
+//--------------------------------------------------------------------------------
 function prime(M2) {
     var P2 = new Array(M2.length)
     for (i in M2) {
@@ -343,7 +386,7 @@ function prime(M2) {
     }
     return P2;
 }
-
+//--------------------------------------------------------------------------------
 function getDCTCoefficients() {
     //Return SplitData's DCT coefficients
 
@@ -432,55 +475,10 @@ function getDCTCoefficients() {
     }
 
 
-    console.log(coefficients);
+    return coefficients;
 
 
     //console.log(testMatrix);
-
-    function transposeArray(array, arrayLength) {
-        //This function takes in an array and transposes it
-        var newArray = [];
-        for (var i = 0; i < array.length; i++) {
-            newArray.push([]);
-        };
-
-        for (var i = 0; i < array.length; i++) {
-            for (var j = 0; j < arrayLength; j++) {
-                newArray[j].push(array[i][j]);
-            };
-        };
-
-        return newArray;
-    }
-
-    function crossProduct(ar1, ar2) {
-        //This function gets the crossProduct of two arrays thats 8x8
-        var c = [
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            [],
-            []
-        ];
-        for (var i = 0; i < 8; i++) {
-            for (var j = 0; j < 8; j++) {
-                c[i][j] =
-                    ar1[i][0] * ar2[0][j] +
-                    ar1[i][1] * ar2[1][j] +
-                    ar1[i][2] * ar2[2][j] +
-                    ar1[i][3] * ar2[3][j] +
-                    ar1[i][4] * ar2[4][j] +
-                    ar1[i][5] * ar2[5][j] +
-                    ar1[i][6] * ar2[6][j] +
-                    ar1[i][7] * ar2[7][j];
-                c[i][j] = Math.round(c[i][j] * 10) / 10;
-            }
-        }
-        return c;
-    }
 
     function getBlock(i, j) {
         //gets a specific block of data
@@ -501,3 +499,281 @@ function getDCTCoefficients() {
     }
 
 }
+
+
+
+
+
+function quantise(c, qual) {
+    var qc = JSON.parse(JSON.stringify(c));
+
+    for (var i = 0; i < c.length; i++) {
+        for (var j = 0; j < c[0].length; j++) {
+            qc[i][j][0] = qBlock(c[i][j][0], qual);
+            //console.log(i, j, c[i][j][0], qc[i][j][0])
+            qc[i][j][1] = qBlock(c[i][j][1], qual);
+            qc[i][j][2] = qBlock(c[i][j][2], qual);
+            qc[i][j][3] = qBlock(c[i][j][3], qual);
+        }
+
+    }
+
+    function qBlock(block, quality) {
+        //console.log(block);
+
+        var qmat = getQualMatrix(quality);
+
+        var result = [
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            []
+        ];
+        for (var i = 0; i < 8; i++) {
+            for (var j = 0; j < 8; j++) {
+                result[i][j] = Math.round(block[i][j] / qmat[j * 8 + i]);
+            }
+        }
+        return result;
+
+    }
+
+
+
+    return qc;
+
+
+    /*
+    //De quantisation
+    return quant8x8.map((q, i) => q * qmat[i]);
+    */
+}
+
+function getQualMatrix(quality) {
+
+    const q50 = [
+        16, 11, 10, 16, 24, 40, 51, 61,
+        12, 12, 14, 19, 26, 58, 60, 55,
+        14, 13, 16, 24, 40, 57, 69, 56,
+        14, 17, 22, 29, 51, 87, 80, 62,
+        18, 22, 37, 56, 68, 109, 103, 77,
+        24, 35, 55, 64, 81, 104, 113, 92,
+        49, 64, 78, 87, 103, 121, 120, 101,
+        72, 92, 95, 98, 112, 100, 103, 99
+    ];
+    var qmat;
+    //console.log(quality, (quality > 50));
+
+
+    //Math.max(Math.min(Math.round(q * (100 - quality) / 50), 255), 1);
+
+    if (quality > 50) qmat = q50.map(q => Math.max(Math.min(Math.round(q * (100 - quality) / 50), 255), 1));
+    else if (quality < 50) qmat = q50.map(q => Math.min(Math.max(Math.round(q * 50 / quality), 1), 255));
+    else { qmat = q50 };
+
+    return qmat;
+}
+
+function reconstruct(quality, c) {
+
+    var qmat = getQualMatrix(quality);
+    var r = JSON.parse(JSON.stringify(c));
+    for (var i = 0; i < c.length; i++) {
+        for (var j = 0; j < c[0].length; j++) {
+            r[i][j][0] = rBlock(c[i][j][0], qmat);
+            r[i][j][1] = rBlock(c[i][j][1], qmat);
+            r[i][j][2] = rBlock(c[i][j][2], qmat);
+            r[i][j][3] = rBlock(c[i][j][3], qmat);
+        }
+    }
+    return r;
+
+    function rBlock(block, qmat) {
+        //console.log(block, qmat);
+        var result = [
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            [],
+            []
+        ];
+        for (var i = 0; i < 8; i++) {
+            for (var j = 0; j < 8; j++) {
+                result[i][j] = Math.round(block[i][j] * qmat[j * 8 + i]);
+            }
+        }
+        return result;
+    }
+
+
+
+
+}
+
+function decompress(r) {
+    var r = JSON.parse(JSON.stringify(r));
+
+    for (var i = 0; i < r.length; i++) {
+        for (var j = 0; j < r[0].length; j++) {
+            r[i][j][0] = dBlock(r[i][j][0]);
+            r[i][j][1] = dBlock(r[i][j][1]);
+            r[i][j][2] = dBlock(r[i][j][2]);
+            r[i][j][3] = dBlock(r[i][j][3]);
+        }
+    }
+
+    return r;
+}
+
+function dBlock(block) {
+
+    var trans = transposeArray(t, 8);
+
+    var N = crossProduct(crossProduct(trans, block), t);
+    for (var i = 0; i < 8; i++) {
+        for (var j = 0; j < 8; j++) {
+            N[i][j] = Math.round(N[i][j]) + 128;
+        }
+    }
+
+    return N;
+}
+
+function transposeArray(array, arrayLength) {
+    //This function takes in an array and transposes it
+    var newArray = [];
+    for (var i = 0; i < array.length; i++) {
+        newArray.push([]);
+    };
+
+    for (var i = 0; i < array.length; i++) {
+        for (var j = 0; j < arrayLength; j++) {
+            newArray[j].push(array[i][j]);
+        };
+    };
+
+    return newArray;
+}
+
+function crossProduct(ar1, ar2) {
+    //This function gets the crossProduct of two arrays thats 8x8
+    var c = [
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        [],
+        []
+    ];
+    for (var i = 0; i < 8; i++) {
+        for (var j = 0; j < 8; j++) {
+            c[i][j] =
+                ar1[i][0] * ar2[0][j] +
+                ar1[i][1] * ar2[1][j] +
+                ar1[i][2] * ar2[2][j] +
+                ar1[i][3] * ar2[3][j] +
+                ar1[i][4] * ar2[4][j] +
+                ar1[i][5] * ar2[5][j] +
+                ar1[i][6] * ar2[6][j] +
+                ar1[i][7] * ar2[7][j];
+            c[i][j] = Math.round(c[i][j] * 10) / 10;
+        }
+    }
+    return c;
+}
+
+function YCbCrtoRGB(ycbcr) {
+    var N = JSON.parse(JSON.stringify(ycbcr));
+    var Y, Cb, Cr;
+
+    for (var i = 0; i < N.length; i++) {
+        for (var j = 0; j < N[0].length; j++) {
+
+
+            for (var x = 0; x < 8; x++) {
+                for (var y = 0; y < 8; y++) {
+                    Y = N[i][j][0][x][y];
+                    Cb = N[i][j][1][x][y];
+                    Cr = N[i][j][2][x][y];
+                    a = N[i][j][3][x][y];
+
+                    var r = Y + 1.40200 * (Cr - 128);
+                    var g = Y - 0.34414 * (Cb - 128) - 0.71414 * (Cr - 128);
+                    var b = Y + 1.77200 * (Cb - 128);
+                    var a = 255;
+
+                    r = 1.164 * (Y - 16) + 1.596 * (Cr - 128);
+                    g = 1.164 * (Y - 16) - 0.813 * (Cr - 128) - 0.392 * (Cb - 128);
+                    b = 1.164 * (Y - 16) + 2.017 * (Cb - 128);
+
+                    r = Math.round(Math.max(0, Math.min(255, r)));
+                    g = Math.round(Math.max(0, Math.min(255, g)));
+                    b = Math.round(Math.max(0, Math.min(255, b)));
+
+
+                    N[i][j][0][x][y] = r;
+                    N[i][j][1][x][y] = g;
+                    N[i][j][2][x][y] = b;
+                    N[i][j][3][x][y] = a;
+
+
+                }
+            }
+
+
+
+        }
+    }
+    return N;
+
+}
+
+function formatData(data) {
+    let arraylen = imgdata.length / 4;
+    var newimgdata = new Array(arraylen);
+    for (let p = 0; p < arraylen; p++) {
+        var i = Math.floor((p % w) / 8);
+        var j = Math.floor(Math.floor(p / w) / 8);
+        //p is the position of the pixel
+        //j is the y of the lock
+        //i is the x of the blovk
+        //w is the width of the image
+        var x = (p % w) % 8
+            //
+        var y = Math.floor(p / w) - (j * 8)
+
+        newimgdata[p * 4] = data[i][j][0][x][y]; //R
+        newimgdata[p * 4 + 1] = data[i][j][1][x][y]; //G
+        newimgdata[p * 4 + 2] = data[i][j][2][x][y]; //B
+        newimgdata[p * 4 + 3] = data[i][j][3][x][y];
+
+
+    }
+    return newimgdata;
+}
+
+function printImg(newimgdata) {
+    imgdata = new Uint8ClampedArray(newimgdata);
+    //console.log(imgdata);
+
+    var canvas = document.getElementById("preview");
+    var ctx = canvas.getContext("2d");
+    ctx.crossOrigin = "Anonymous";
+    //put image on canvas
+    ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+    //PUT IMAGE DATA ON CANVAS
+    var d = new ImageData(imgdata, 640, 480);
+
+    ctx.putImageData(d, 0, 0);
+
+};

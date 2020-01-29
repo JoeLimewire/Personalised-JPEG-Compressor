@@ -7,16 +7,20 @@
     <link href="styles/indexSheet.css" rel="stylesheet"></link>
     <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/mathjs@6.5.0/dist/math.js"></script>
-    <script type="text/javascript" src="scripts/indexScript.js"></script>
+
 </head>
 
 <body>
-    <h1> Personalised JPEG Compressor</h1>
+    <img id="loading" src="image/loading.gif" alt="loading Img" style=" float: right; width: 100px; height: 100px; display:none;">
+    <h1>Personalised JPEG Compressor</h1>
     <h2 class="left">Original</h2>
     <h2 class="right">Compressed</h2>
 
     <br>
     <div class="main">
+
+
+
         <!-- Photo by Daniela Cuevas -->
 
 
@@ -31,8 +35,10 @@
     <input type="button" class="btnQuantise" value="Quantise">
 
     <div id="sliderContainer">
+        <p style="float:left;">Quality: <span id="qPercent"></span></p>
         <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
     </div>
+    <script type="text/javascript" src="scripts/indexScript.js"></script>
 </body>
 
 </html>
