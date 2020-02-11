@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+    <meta charset="utf-8">
+    <title>Personalised JPEG Compressor</title>
+    <link href="styles/indexSheet.css" rel="stylesheet"></link>
+    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/mathjs@6.5.0/dist/math.js"></script>
+
+</head>
+
+<body>
+
+    <h1>PERSONALISED JPEG COMPRESSOR</h1>
+    <h2 class="left">Original</h2>
+    <h2 class="right">Compressed</h2>
+
+
+
+    <br>
+    <div class="main">
+
+
+
+        <!-- Photo by Daniela Cuevas -->
+
+        <div id="imgDiv">
+
+        </div>
+
+        <table id="table" cellspacing="0"></table>
+
+
+        <canvas id="preview"></canvas>
+    </div>
+
+
+
+
+    <div id="sliderContainer">
+
+        <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+        <p style="float:left;width:15%"><b>Quality: <span id="qPercent"></b></span>
+        </p>
+
+        <select id="imgSelect" class="imgDrop">
+                <option value="dog.jpg">Dog</option>
+                <option value="pier.jpg">Pier</option>
+                <option value="pencils.jpg">Flower</option>
+                <option value="hotBalloon.jpg">Hot Air Balloon [LONG]</option>
+                <option value="4K.jpg">4K [VERY LONG]</option>
+          </select>
+
+
+
+
+        <input type="button" id="btnQuantise" value="Quantise">
+        <div id="timeTaken" style="left:0px;">----</div>
+
+
+    </div>
+
+    <div id="divInst">
+        <h1>What is JPEG Compression?</h1>
+        <p>
+            JPEG stands for <b>Joint Photographic Experts Group</b>.
+            <br> It is a standard for compressing images all across the world and it does this because it can reduce the file size of images massively while maintaining the image quality. Why don't you try to reduce the image quality until you can see
+            differences in the images?
+            <br> Prettly low right?
+            <br> It does this by splitting it into 8x8 block, and analysing its spacial frequancies.
+            <br> <br> All this means, it grabs 8x8 blocks of pixels and it trys to find certain shapes to recreate the block. Then all it has to store is what shapes it uses then it can make the block again.
+            <br> Hopefully this explanation of the process can help you to understand:
+        </p>
+
+    </div>
+    <script type="text/javascript" src="scripts/indexScript.js"></script>
+</body>
+
+</html>
