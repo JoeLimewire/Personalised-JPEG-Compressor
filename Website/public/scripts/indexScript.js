@@ -137,6 +137,7 @@ window.addEventListener('DOMContentLoaded', function() {
     //--------------------------------------------------------------------------------
     function createTable(x, y) {
         var table = document.getElementById("table");
+        table.width = 400;
         table.innerHTML = "";
         for (var j = 0; j < 8; j++) {
             var row = table.insertRow(i);
@@ -149,9 +150,9 @@ window.addEventListener('DOMContentLoaded', function() {
                 var g = Math.floor(sData[x][y][z][1]);
                 var b = Math.floor(sData[x][y][z][2]);
 
-                cell.innerHTML = r;
+                //cell.innerHTML = r;
                 cell.style.backgroundColor = "rgb(" + r + "," + g + "," + b + ")";
-
+                cell.height = table.width / 9;
                 /*
                 var Y = Math.floor(sData[x][y][z][0]);
                 var Cb = Math.floor(sData[x][y][z][1]);
@@ -731,6 +732,7 @@ window.addEventListener('DOMContentLoaded', function() {
     }
 
     function YCbCrtoRGB(ycbcr) {
+
         var N = JSON.parse(JSON.stringify(ycbcr));
         var Y, Cb, Cr;
 

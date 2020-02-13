@@ -5,25 +5,28 @@
     <meta charset="utf-8">
     <title>Personalised JPEG Compressor</title>
     <link href="styles/indexSheet.css" rel="stylesheet"></link>
-    <link href="https://fonts.googleapis.com/css?family=Roboto&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Roboto:100&display=swap" rel="stylesheet">
     <script src="https://unpkg.com/mathjs@6.5.0/dist/math.js"></script>
 
 </head>
 
 <body>
 
+    <p style="margin: 0;text-align: left; padding-left:10px; color: grey"> Made By Joseph Higgins </p>
+    <br>
     <h1>PERSONALISED JPEG COMPRESSOR</h1>
-    <h2 class="left">Original</h2>
-    <h2 class="right">Compressed</h2>
+    <br>
+    <p style="margin: 0;text-align: left; padding-left:10px">Please select a image from the drop down box to get started.</p>
+
 
 
 
     <br>
     <div class="main">
 
+        <h2 class="left">Original</h2>
 
-
-        <!-- Photo by Daniela Cuevas -->
+        <h2 class="right">Compressed</h2>
 
         <div id="imgDiv">
 
@@ -33,47 +36,109 @@
 
 
         <canvas id="preview"></canvas>
-    </div>
 
 
 
 
-    <div id="sliderContainer">
 
-        <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
-        <p style="float:left;width:15%"><b>Quality: <span id="qPercent"></b></span>
-        </p>
+        <div id="sliderContainer">
 
-        <select id="imgSelect" class="imgDrop">
+            <input type="range" min="1" max="100" value="50" class="slider" id="myRange">
+            <p style="float:left;width:15%"><b>Quality: <span id="qPercent"></b></span>
+            </p>
+
+            <select id="imgSelect" class="imgDrop">
+                <option>-</option>
                 <option value="dog.jpg">Dog</option>
                 <option value="pier.jpg">Pier</option>
                 <option value="pencils.jpg">Flower</option>
                 <option value="hotBalloon.jpg">Hot Air Balloon [LONG]</option>
-                <option value="4K.jpg">4K [VERY LONG]</option>
+                <option value="4K.jpg">4K [VERY LONG, MAY CRASH]</option>
           </select>
 
 
 
 
-        <input type="button" id="btnQuantise" value="Quantise">
-        <div id="timeTaken" style="left:0px;">----</div>
+            <input type="button" id="btnQuantise" value="Quantise">
+
+            <p>Time taken to process image:</p>
+            <div id="timeTaken" style="left:0px;">- - - - ms</div>
 
 
+        </div>
+        <br>
     </div>
+
+    <br> If you're stuck, scroll down! There are instructions below!
 
     <div id="divInst">
-        <h1>What is JPEG Compression?</h1>
-        <p>
-            JPEG stands for <b>Joint Photographic Experts Group</b>.
-            <br> It is a standard for compressing images all across the world and it does this because it can reduce the file size of images massively while maintaining the image quality. Why don't you try to reduce the image quality until you can see
-            differences in the images?
-            <br> Prettly low right?
-            <br> It does this by splitting it into 8x8 block, and analysing its spacial frequancies.
-            <br> <br> All this means, it grabs 8x8 blocks of pixels and it trys to find certain shapes to recreate the block. Then all it has to store is what shapes it uses then it can make the block again.
-            <br> Hopefully this explanation of the process can help you to understand:
-        </p>
 
+        <h1>What is JPEG Compression?</h1>
+        <div id="instLeft">
+            <p>
+                <br> JPEG is a lossy compressing standard for images all across the world, famous for reducing the file size of images massively while maintaining the image "quality". The ratio of compression is around 10:1, meaning you could fit a 1GB
+                image into around 127MB! This is HUGE when thinking of all the images in the world, how much space that must save!
+            </p>
+            <p style="color:palegreen">
+                <br> <b>Why don't you try to reduce an images quality above until you can see differences in both images?</b>
+                <br> To do this, follow these steps:
+            </p>
+
+            <br> ○ Select an Image from the green drop down box on the bottom of the application.
+            <br> ○ Play with the slider to get the desired quality from the compression. See the 'quality' value change as you move the slider.
+            <br> ○ Click the quantise button to begin processing.
+            <br>
+            <p style="text-align: right;color:grey">Use the 'dog' picture for fastest processing.</p>
+            <p>
+                <br> Prettly low right?
+                <p style="color:palegreen">Hover over the image to see what its done to the pixels</p>
+                <br> <br> Essentially it grabs blocks of pixels (8x8) and it trys to find certain shapes to recreate the look of the block. It repeats this for all 3 colour values(red, green and blue), then all it has to store is what shapes it uses then
+                it can make the block of pixels again.
+                <br> Still don't understand?
+                <br> Hopefully this deeper explanation of the process can help you to understand.
+                <br>
+                <p style="color:palegreen">There are 5 nessasary steps to dealing with compression. These steps include:</p>
+                <br> ○ RGB to YCbCr Conversion
+                <br> ○ Splitting and Shifting this data, preparing for compression.
+                <br> ○ Finding DCT Coefficients for each block
+                <br> ○ Quantisation
+                <br> ○ Recomposition
+                <br>
+            </p>
+            <br>
+            <h1 id="h1Sub"> RGB to YCbCr Conversion </h1>
+            <br>
+            <p>
+                YCbCr is another way of representing colour within a pixel. It is split by luminance ([Y], also known as brightness) and Chrominance([Cb] and [Cr] also known as hue). These values can be closely predicted by using the appropriate equations which we apply
+                to each pixel to get the value we need.
+            </p>
+
+        </div>
+        <div id="instRight">
+
+            <img src="image/doesItLookLike">
+            <br>
+            <p id="lil">https://giphy.com/gifs/GtmCt1XWY2Ov6</p>
+            <br>
+            <img src="image/YCbCr.gif">
+            <br>
+            <p id="lil">http://gpsanimator.com/gif1/colorCube50_YCbCr.html</p>
+            <br>
+            <img src="image/cubeSplit.gif">
+            <br>
+            <p id="lil">https://www.reddit.com/r/isometric/comments/717b7h/cube_splitting_xpost_rgeometryisneat/</p>
+            <br>
+            <img src="image/DCT.png">
+            <br>
+            <p id="lil">http://rebloggy.com/post/gif-wave-3d-editor-transparent-unity-wire-loop-sine-wireframe/88303645632</p>
+            <br>
+            <img src="image/quantise.gif">
+            <br>
+            <p id="lil">https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.tumblr.com%2Ftagged%2Fquantise&psig=AOvVaw30yq<br>w05u7SHRs1asfpIRb3&ust=1581688945237000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCMiavc_YzucCFQAAAAAdAAAAABAR</p>
+
+        </div>
     </div>
+
     <script type="text/javascript" src="scripts/indexScript.js"></script>
 </body>
 

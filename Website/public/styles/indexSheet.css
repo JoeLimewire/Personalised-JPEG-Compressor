@@ -5,19 +5,44 @@ body {
     font-family: roboto, ariel;
     padding: 0px;
     display: inline;
+    font-size: 20px;
+    margin: 0px;
+    overflow: auto;
 }
 
 h1 {
-    background-color: #4CAF50;
+    margin: 0px;
+    padding: 10px;
+    background-color: rgba(76, 175, 80);
     color: black;
 }
 
+#h1Sub {
+    background-color: rgb(60, 60, 60);
+    color: rgba(76, 175, 80);
+    font-size: 26px;
+}
+
 h2 {
+    margin: 0px;
     padding: 10px;
     position: absolute;
 }
 
+p {
+    margin: 0px;
+}
+
+#lil {
+    float: right;
+    color: grey;
+    font-size: 10px;
+}
+
 .main {
+    border-left: 6px solid rgba(76, 175, 80);
+    background-color: rgb(60, 60, 60);
+    ;
     padding: 20px;
     display: absolute;
     top: 25%;
@@ -62,18 +87,18 @@ h2 {
 }
 
 #btnQuantise {
+    -webkit-transition: .2s;
     position: absolute;
     border: none;
-    border-radius: 30;
-    background-color: rgb(24, 224, 24);
+    background-color: rgb(24, 170, 24);
     padding: 20px;
     margin: 10%;
     left: 40%;
     transform: translate(-50%, 0%);
 }
 
-#btnQuantise :hover {
-    background-color: rgb(24, 170, 24);
+#btnQuantise:hover {
+    background-color: rgb(24, 224, 24);
 }
 
 .slider {
@@ -142,10 +167,21 @@ h2 {
     top: 50%;
     margin-top: 500px;
     margin-left: 5%;
+    position: inline;
+    clear: both;
 }
 
-p {
-    width: 50%;
+#instLeft {
+    float: left;
+    width: 60%;
+    padding: 0px 10px 0px 10px;
+}
+
+#instRight {
+    border-left: 6px solid blue;
+    background-color: rgb(60, 60, 60);
+    float: right;
+    padding: 2%;
 }
 
 
@@ -160,6 +196,11 @@ p {
     cursor: pointer;
     float: right;
     margin: 20px;
+    -webkit-transition: .2s;
+}
+
+.imgDrop:Hover {
+    background-color: #18e018
 }
 
 
@@ -181,6 +222,3 @@ p {
     background-color: #3e8e41;
     margin: 20px;
 }
-
-
-/*========================================================================================================================================*/
