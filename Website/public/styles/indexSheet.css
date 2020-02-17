@@ -44,7 +44,7 @@ p {
     background-color: rgb(60, 60, 60);
     ;
     padding: 20px;
-    display: absolute;
+
     top: 25%;
 }
 
@@ -59,13 +59,14 @@ p {
 #table {
     float: left;
     position: absolute;
+    top: 50%;
     left: 50%;
-    top: 20%;
-    transform: translate(-50%, 0%);
+    margin-right: -50%;
+    transform: translate(-50%, -50%)
 }
 
 #table tbody tr td {
-    padding: 10px;
+    padding: 15px;
 }
 
 #preview {
@@ -88,13 +89,12 @@ p {
 
 #btnQuantise {
     -webkit-transition: .2s;
-    position: absolute;
+    display:inline-block;
     border: none;
     background-color: rgb(24, 170, 24);
     padding: 20px;
-    margin: 10%;
-    left: 40%;
-    transform: translate(-50%, 0%);
+    left:auto;
+    margin: 20px;
 }
 
 #btnQuantise:hover {
@@ -156,32 +156,39 @@ p {
     /* Cursor on hover */
 }
 
+#estimates{
+  margin: 20px;
+  padding-top: 100px;
+}
+
 #sliderContainer {
     width: 800px;
     margin: 20px auto;
-    margin-top: 400px;
+    margin-top: 10%;
 }
 
 #divInst {
     text-align: left;
-    top: 50%;
     margin-top: 500px;
     margin-left: 5%;
-    position: inline;
+    display:inline;
+    position: block;
     clear: both;
 }
 
 #instLeft {
     float: left;
-    width: 60%;
+    width: 50%;
     padding: 0px 10px 0px 10px;
 }
 
 #instRight {
-    border-left: 6px solid blue;
+    border-left: 6px solid rgba(76, 175, 80);
     background-color: rgb(60, 60, 60);
     float: right;
     padding: 2%;
+    width:40%;
+    height:100%;
 }
 
 

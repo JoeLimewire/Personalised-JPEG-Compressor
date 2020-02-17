@@ -24,15 +24,16 @@
     <br>
     <div class="main">
 
-        <h2 class="left">Original</h2>
+        <h2 class="left" style="padding:10px;">Original</h2>
 
-        <h2 class="right">Compressed</h2>
+        <h2 class="right" style="padding: 10px;">Compressed</h2>
 
         <div id="imgDiv">
 
         </div>
 
-        <table id="table" cellspacing="0"></table>
+
+        <table id="table" cellspacing="0">Block Table</table>
 
 
         <canvas id="preview"></canvas>
@@ -47,53 +48,60 @@
             <p style="float:left;width:15%"><b>Quality: <span id="qPercent"></b></span>
             </p>
 
-            <select id="imgSelect" class="imgDrop">
-                <option>-</option>
-                <option value="dog.jpg">Dog</option>
-                <option value="pier.jpg">Pier</option>
-                <option value="pencils.jpg">Flower</option>
-                <option value="hotBalloon.jpg">Hot Air Balloon [LONG]</option>
-                <option value="4K.jpg">4K [VERY LONG, MAY CRASH]</option>
-          </select>
 
-
-
-
-            <input type="button" id="btnQuantise" value="Quantise">
-
-            <p>Time taken to process image:</p>
-            <div id="timeTaken" style="left:0px;">- - - - ms</div>
 
 
         </div>
+        <input type="button" id="btnQuantise" value="Quantise" class="right">
+
+        <select id="imgSelect" class="imgDrop">
+            <option>DROPDOWN BOX</option>
+            <option value="dog.jpg">Dog</option>
+            <option value="pier.jpg">Pier</option>
+            <option value="pencils.jpg">Flower</option>
+            <option value="hotBalloon.jpg">Hot Air Balloon [LONG]</option>
+            <option value="4K.jpg">4K [VERY LONG, MAY CRASH]</option>
+      </select>
+
+
+
+
+
+
+        <div id = "estimates">
+        <p class = "left">Time taken to process image: <div id="timeTaken" class = "left"> - - - - ms</div></p>
+        <br>
+        <p class="left" id = "imgSize"></p>
+        <p class="right" id="compressedSize"></p>
+      </div>
         <br>
     </div>
 
     <br> If you're stuck, scroll down! There are instructions below!
-
+    <br><br>
     <div id="divInst">
 
         <h1>What is JPEG Compression?</h1>
         <div id="instLeft">
             <p>
-                <br> JPEG is a lossy compressing standard for images all across the world, famous for reducing the file size of images massively while maintaining the image "quality". The ratio of compression is around 10:1, meaning you could fit a 1GB
+                <br> JPEG is a lossy compressing standard for images all across the world, famous for reducing the file size of images massively while maintaining the image "quality". "Lossy" means this method will lose some data of the original image, therefore the output wont be the same. The ratio of compression is around 10:1 with huffman encoding and reduction of colour-depth, meaning you could fit a 1GB
                 image into around 127MB! This is HUGE when thinking of all the images in the world, how much space that must save!
             </p>
             <p style="color:palegreen">
-                <br> <b>Why don't you try to reduce an images quality above until you can see differences in both images?</b>
+                <br> <b>Exercise: Why don't you try to reduce an images quality above until you can see differences in both images?</b>
                 <br> To do this, follow these steps:
             </p>
 
-            <br> ○ Select an Image from the green drop down box on the bottom of the application.
+            <br> ○ Select an Image from the green drop down box on the bottom right of the application above.
             <br> ○ Play with the slider to get the desired quality from the compression. See the 'quality' value change as you move the slider.
-            <br> ○ Click the quantise button to begin processing.
+            <br> ○ Click the quantise button to begin processing. You will need to click quantise to get a new image every time.
             <br>
             <p style="text-align: right;color:grey">Use the 'dog' picture for fastest processing.</p>
             <p>
-                <br> Prettly low right?
-                <p style="color:palegreen">Hover over the image to see what its done to the pixels</p>
-                <br> <br> Essentially it grabs blocks of pixels (8x8) and it trys to find certain shapes to recreate the look of the block. It repeats this for all 3 colour values(red, green and blue), then all it has to store is what shapes it uses then
-                it can make the block of pixels again.
+                <br> You can get the Quality level prettly low right?
+                <p style="color:palegreen">Hover over the compressed image to see what its done to the pixels</p>
+                <br> So, what is happening here? <br>  When you bring the quality level really low you can see the image looks pixelated. Essentially, these are blocks of pixels of 8x8 and  the algorithm trys to find certain "patterns" to recreate the block. Kind of like using certain lego bricks to make a lego house; there are a variety of lego bricks to make the house but the most used lego brick is the most essential brick to rebuild the lego house, agree? It repeats this for all 3 colour values(red, green and blue), and trys to find the most common pattern (or lego brick) for each block of the image. Then all it has to store is what patterns it uses for what block then it can make the image out of these patterns.
+                <br>
                 <br> Still don't understand?
                 <br> Hopefully this deeper explanation of the process can help you to understand.
                 <br>
@@ -109,32 +117,121 @@
             <h1 id="h1Sub"> RGB to YCbCr Conversion </h1>
             <br>
             <p>
-                YCbCr is another way of representing colour within a pixel. It is split by luminance ([Y], also known as brightness) and Chrominance([Cb] and [Cr] also known as hue). These values can be closely predicted by using the appropriate equations which we apply
+                YCbCr is another way of representing colour within a pixel. It is split by luminance ([Y], also known as brightness) and Chrominance([Cb] and [Cr] also known as hue). This is used in JPEG compression to seperate the hue from brightness na dmakes it easier to debug. These values can be closely predicted by using the appropriate equations which we apply
                 to each pixel to get the value we need.
+                <br>
+                <p style="color:palegreen">YCbCr is more different than RGB, you may have heard that RGB values range from 0 to 255. YCbCr however works from -127 to 128.</p>
+                <br>
+                Which bring me onto the next step...
             </p>
+            <br>
+            <h1 id="h1Sub">Splitting, Shifting and Formatting the data</h1>
+            <br>
+            <p>
+                We now need to split our image into the approprate 8x8 blocks to get ready for the algorithm. The images that we are handling above, get split into 4,800 blocks with the biggest image containg 252,560 blocks!
+                <br>
+                <p style="color:palegreen">Blocks are just groups of pixels, we then need to shift all 3 values (Y,Cb,Cr) down -127 to gain back the appropriate colour for the pixel.</p>
+                Once we have done this for all three colour channels, we are now ready to delve deep into the algoritm.
+            </p>
+            <br>
+            <h1 id="h1Sub">DCT and finding Coefficients</h1>
+            <br>
+            <p>
+              This step probably looks scarier than the rest, and that is because... it is.
+              <br>
+              <br>
+              DCT stands for <b> Discrete Cosine Transform </b>.
+              <br>
+              It is basically a map of the patterns the computer has to its disposal to recrete each block.
+              I'll put the map here:
+              <br>
+              <img src="image/dctMatrix.png">
+              <br>
+              Coefficients, eventhough it is a fancy word, just means how much of ONE of these patterns has influence over the block.
+              <br>
+              <br>
+              Let's say you took a picture of you and your friends at table, the picture is storing the little grains in the wood of the table. Essentially you can use this map here to describe where the lightest/darkest parts of the grains are in the picture. If they're in a straight lined pattern, you can use the first row of patterns to describe it.
+              <br>Most commonly, the very first pattern in the DCT (The white block) has the most influence over all blocks.
+              <p style="color:palegreen"><b> Exercise: Try it in the application!</b><br> Get the lowest quality you can and look at the blocks that are all one colour!</p>
+              Plus you maybe able to see other patterns come through!
+              <br>
+              Hover over them to look at them more closely
+              </p>
+              <br>
+              <h1 id="h1Sub">Quantisation</h1>
+              <p>
+                Quantisation may sound scary but its not, essentually what it is is applying the Coefficients to each block (Applying the different patterns to make the block)
+                <br>
+                <br>
+                <p style="color:lightblue">In lego terms, this is the making of the house. We know what blocks make the most impact on the house so now all we need to do is make the house!<p>
+                  <br>
+                  Though now we are  making a block instead of a house. If you see the "Instance of Quantisation" picutre on the right - you can see whats happening. We essentially get the cross product of the coefficients table that we found last step and the constant quantisation table that is hardly changed.
+                <br>
+                <h1 id="h1Sub">Recomposition</h1>
+                   This is reversing the proccesses above so we can let the computer understand what we have done above. This can involve huffman encoding if you're dealing with real files or formatting the data back into an RGB format so it can be printed on your screen!
 
+                   <br>
+                   Then thats it! You've successfully mde a JPEG Compressor!
+                <br>
+
+              </p>
         </div>
         <div id="instRight">
-
+            JPEG Quality:
+            <br>
             <img src="image/doesItLookLike">
             <br>
             <p id="lil">https://giphy.com/gifs/GtmCt1XWY2Ov6</p>
+            <br>
+            <br>
+            Ratios:
+            <br>
+            <img src="image/Ratio.gif" width = 500px>
+            <br>
+            <p id="lil">https://patches.zone/compression-guide</p>
+            <br>
+            <br>
+            YCbCr Colour Space:
             <br>
             <img src="image/YCbCr.gif">
             <br>
             <p id="lil">http://gpsanimator.com/gif1/colorCube50_YCbCr.html</p>
             <br>
+            <br>
+            Illustration of Splitting and Shifting:
+            <br>
             <img src="image/cubeSplit.gif">
             <br>
-            <p id="lil">https://www.reddit.com/r/isometric/comments/717b7h/cube_splitting_xpost_rgeometryisneat/</p>
+            <p id="lil">https://www.reddit.com/r/isometric/comments/717b7h/<br>cube_splitting_xpost_rgeometryisneat/</p>
+            <br>
+            <br>
+            DCT:
             <br>
             <img src="image/DCT.png">
             <br>
-            <p id="lil">http://rebloggy.com/post/gif-wave-3d-editor-transparent-unity-wire-loop-sine-wireframe/88303645632</p>
+            <p id="lil">https://en.wikipedia.org/wiki/Discrete_cosine_transform</p>
+            <br>
+            <br>
+            Quantisation:
             <br>
             <img src="image/quantise.gif">
             <br>
-            <p id="lil">https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.tumblr.com%2Ftagged%2Fquantise&psig=AOvVaw30yq<br>w05u7SHRs1asfpIRb3&ust=1581688945237000&source=images&cd=vfe&ved=0CAIQjRxqFwoTCMiavc_YzucCFQAAAAAdAAAAABAR</p>
+            <p id="lil">https://www.researchgate.net/figure/<br>Computation-of-the-quantized-DCT-coefficients_fig2_260632175</p>
+            <br>
+            <br>
+            Change of Quality in JPEG:
+            <br>
+            <img src="image/gradualQuality.gif">
+            <br>
+            <p id="lil">https://www.dcviews.com/tutors/tt55815.htm</p>
+            <br>
+            <br>
+            Reformatting:
+            <br>
+            <img src="image/blocksStacking.gif" width = 500px>
+            <br>
+            <p id="lil">https://dribbble.com/shots/4705439-Stacking-Blocks</p>
+            <br>
 
         </div>
     </div>

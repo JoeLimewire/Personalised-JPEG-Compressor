@@ -15,6 +15,7 @@ window.addEventListener('DOMContentLoaded', function() {
     ]
 
     const loadingImg = document.getElementById("loading");
+    var quantiseZeroCount = 0;
 
     var w, h;
     var sData;
@@ -23,20 +24,41 @@ window.addEventListener('DOMContentLoaded', function() {
     var imgdata;
 
     document.getElementById("btnQuantise").addEventListener("click", function() {
-
-
-
+        quantiseZeroCount = 0;
         console.log("Loading...");
         var startTime = (new Date()).getTime();
         runCom(quality, function() {
             document.getElementById("timeTaken").innerHTML = (new Date()).getTime() - startTime + "ms";
         });
 
+        console.log(img);
+        var imgByteSize = getImageSizeInBytes(img.src);
+        console.log(quantiseZeroCount);
+        //This negates the alpha channel of the quantise matrix which is filled with 0's.
+        quantiseZeroCount = quantiseZeroCount - w*h;
+        //Get the average amount of numbers in each block
+        console.log(quantiseZeroCount);
+        quantiseZeroCount = (quantiseZeroCount/(img.width/8))/img.height/8;
+        console.log(quantiseZeroCount);
+        //Get predicted file size of compressed image.
+        var compressedFileSize = Math.round(imgByteSize/quantiseZeroCount);
+        console.log(compressedFileSize);
 
+        document.getElementById("imgSize").innerHTML = "Original Image Size = " + imgByteSize + " Bytes";
+        document.getElementById("compressedSize").innerHTML = " Estimated Compressed Image Size ~ " + compressedFileSize + " Bytes";
 
-
-        // hide image
     }, false);
+
+    function getImageSizeInBytes(imgURL) {
+      //This gets the size of the current image in bytes
+      var request = new XMLHttpRequest();
+      request.open("HEAD", imgURL, false);
+      request.send(null);
+      var headerText = request.getAllResponseHeaders();
+      var re = /Content\-Length\s*:\s*(\d+)/i;
+      re.exec(headerText);
+      return parseInt(RegExp.$1);
+}
 
     document.getElementById("myRange").addEventListener("input", function() {
         var qpercent = document.getElementById("myRange");
@@ -64,6 +86,8 @@ window.addEventListener('DOMContentLoaded', function() {
         imgdata = getImgData();
         console.log(imgdata);
 
+        alert("Successful: Processing Image \n This may take a while, please be patient. \n Press 'Ok' to continue");
+
         //RGB to YCbCr Conversion
         imgdata = rgbToYCbCr(imgdata);
         console.log("YCbCr: ");
@@ -82,7 +106,7 @@ window.addEventListener('DOMContentLoaded', function() {
 
 
         //Gets rid of unessasery coEfficients
-        //New format  - '[width][height]'<- Blocks ' [Channel] <- Colour (YCBCr) [pixelX][pixelY] 
+        //New format  - '[width][height]'<- Blocks ' [Channel] <- Colour (YCBCr) [pixelX][pixelY]
         var qc = quantise(c, quality);
 
         console.log("Quantise: " + quality);
@@ -137,14 +161,13 @@ window.addEventListener('DOMContentLoaded', function() {
     //--------------------------------------------------------------------------------
     function createTable(x, y) {
         var table = document.getElementById("table");
-        table.width = 400;
+
         table.innerHTML = "";
         for (var j = 0; j < 8; j++) {
             var row = table.insertRow(i);
             for (var i = 7; i >= 0; i--) {
                 var cell = row.insertCell(0);
                 //grab some value
-                var ran = Math.floor(Math.random() * 128) + 1;
                 var z = j * 8 + i;
                 var r = Math.floor(sData[x][y][z][0]);
                 var g = Math.floor(sData[x][y][z][1]);
@@ -152,7 +175,6 @@ window.addEventListener('DOMContentLoaded', function() {
 
                 //cell.innerHTML = r;
                 cell.style.backgroundColor = "rgb(" + r + "," + g + "," + b + ")";
-                cell.height = table.width / 9;
                 /*
                 var Y = Math.floor(sData[x][y][z][0]);
                 var Cb = Math.floor(sData[x][y][z][1]);
@@ -173,9 +195,6 @@ window.addEventListener('DOMContentLoaded', function() {
             }
         }
     }
-
-
-
     //--------------------------------------------------------------------------------
     function getImgData() {
 
@@ -406,11 +425,6 @@ window.addEventListener('DOMContentLoaded', function() {
             //console.log(pos);
             highlightCell(pos.x, pos.y);
         }, false);
-        canvas.addEventListener('click', function(evt) {
-            var mousePos = getMousePos(canvas, evt);
-            var message = 'Mouse position: ' + Math.round(mousePos.x / 8) + ',' + Math.round(mousePos.y / 8);
-            alert(message)
-        });
 
         ctx.stroke();
     }
@@ -510,6 +524,8 @@ window.addEventListener('DOMContentLoaded', function() {
 
                 //coefficients[BlockX][BlockY][Channel][PixelX][PixelY]
                 coefficients[i][j] = [dctY, dctCb, dctCr, dctA];
+
+
             }
         }
 
@@ -538,10 +554,6 @@ window.addEventListener('DOMContentLoaded', function() {
         }
 
     }
-
-
-
-
 
     function quantise(c, qual) {
         var qc = JSON.parse(JSON.stringify(c));
@@ -575,6 +587,7 @@ window.addEventListener('DOMContentLoaded', function() {
             for (var i = 0; i < 8; i++) {
                 for (var j = 0; j < 8; j++) {
                     result[i][j] = Math.round(block[i][j] / qmat[j * 8 + i]);
+                    if(result[i][j] == 0 ||result[i][j] == -0) quantiseZeroCount = quantiseZeroCount + 1;
                 }
             }
             return result;
@@ -582,7 +595,7 @@ window.addEventListener('DOMContentLoaded', function() {
         }
 
 
-
+        console.log(quantiseZeroCount);
         return qc;
 
 
