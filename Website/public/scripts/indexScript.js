@@ -23,10 +23,13 @@ window.addEventListener('DOMContentLoaded', function() {
     var img = new Image();
     var imgdata;
 
+//-------------------------------------------------MAIN FUNCTION------------------------------------------------- 
+
     document.getElementById("btnQuantise").addEventListener("click", function() {
         quantiseZeroCount = 0;
         console.log("Loading...");
         var startTime = (new Date()).getTime();
+        
         runCom(quality, function() {
             document.getElementById("timeTaken").innerHTML = (new Date()).getTime() - startTime + "ms";
         });
@@ -34,6 +37,7 @@ window.addEventListener('DOMContentLoaded', function() {
         console.log(img);
         var imgByteSize = getImageSizeInBytes(img.src);
         console.log(quantiseZeroCount);
+
         //This negates the alpha channel of the quantise matrix which is filled with 0's.
         quantiseZeroCount = quantiseZeroCount - w*h;
         //Get the average amount of numbers in each block
